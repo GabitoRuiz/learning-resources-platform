@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('resources', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('title');
+            $table->foreignId('category_id')->constrained();
+            $table->foreignId('creator_id')->constrained('users');
+            $table->string('link');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('resources');
     }
 };
