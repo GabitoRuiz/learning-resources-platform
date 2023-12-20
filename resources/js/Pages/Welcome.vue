@@ -38,7 +38,13 @@ watch(search, (value => {
 
 onMounted(() => {
     filteredResources.value = props.resources;
-})
+});
+
+function Votar(ResourceId){
+    axios.get("/api/vote/" +  resourceId).then((response) => {
+
+    })
+}
 </script>
 
 <template>
@@ -89,8 +95,8 @@ onMounted(() => {
                             resource.category.name }}</span>
                 </div>
                 <div class="px-6 py-4">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Añadir al Carrito
+                    <button @click="Votar(resourceId)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Votar
                     </button>
                 </div>
             </div>
