@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted, defineProps } from "vue";
+import axios from 'axios';
+import { onMounted, defineProps, ref, watch } from "vue";
 
 const props = defineProps({
     canLogin: {
@@ -12,20 +13,42 @@ const props = defineProps({
 
     resources: {
         type: Array,
-    }
+    },
+
+    categories: {
+        type: Array,
+    },
 });
 
+let filteredCategories = ref(null)
+let search = ref('');
+let filteredResources = ref([]);
+
+watch(filteredCategories, (value => {
+    axios.get('/api/resources?category=' + value).then((response) => {
+        filteredCategories.value = response.data;
+    });
+}));
+
+watch(search, (value => {
+    axios.get('/api/resources?search=' + value).then((response) => {
+        filteredResources.value = response.data;
+    });
+}));
+
 onMounted(() => {
-    console.log("Component Mounted", props.resources);
+    filteredResources.value = props.resources;
 })
 </script>
 
 <template>
     <Head title="Hi" />
 
+
     <div
         class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
+
             <Link v-if="$page.props.auth.user" :href="route('dashboard')"
                 class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
             Dashboard</Link>
@@ -38,31 +61,40 @@ onMounted(() => {
                 <Link v-if="canRegister" :href="route('register')"
                     class="ms-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
                 Register</Link>
+
+
             </template>
         </div>
-        <div class="container mx-auto p-20 gap-8 grid grid-cols-4">
-        <div class="max-w-lg  rounded overflow-hidden shadow-lg bg-white" v-for="resource in resources" :key="resource.id">
-            <img class="w-full" src="imagen-del-producto.jpg" alt="Producto">
-            <div class="px-6 py-4">
-                <div class="font-bold text-xl mb-2">{{ resource.title }}</div>
-                <p class="text-gray-700 text-base">
-                    {{resource.link}}
-                </p>
-            </div>
-            <div class="px-6 py-4">
-                <span
-                    class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">{{ resource.category.name }}</span>
-            </div>
-            <div class="px-6 py-4">
-                <span class="text-gray-700">Precio: $XX.XX</span>
-            </div>
-            <div class="px-6 py-4">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Añadir al Carrito
-                </button>
+        <div class="flex justify-center absolute top-10">
+            <input type="text" placeholder="Buscar...." v-model="search">
+            <select class="w-full px-3 py-2 border rounded-md" v-model="filteredCategories">
+                <option v-for="category in categories" :key="category.id" :value="category.id">
+                    {{ category.name }}
+                </option>
+            </select>
+
+        </div>
+        <div class="container mx-auto mt-20 p-20 gap-8 grid grid-cols-4">
+            <div class="max-w-lg  rounded overflow-hidden shadow-lg bg-white" v-for="resource in filteredResources"
+                :key="resource.id">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">{{ resource.title }}</div>
+                    <p class="text-gray-700 text-base">
+                        {{ resource.link }}
+                    </p>
+                </div>
+                <div class="px-6 py-4">
+                    <span
+                        class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">{{
+                            resource.category.name }}</span>
+                </div>
+                <div class="px-6 py-4">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Añadir al Carrito
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </template>
 

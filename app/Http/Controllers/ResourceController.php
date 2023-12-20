@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resource;
-use App\Models\Category;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +13,7 @@ class ResourceController extends Controller
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
-            'resources' => Resource::with('category')->get(),
+            'resources' => Resource::with('category')->latest()->get(),
         ]);
     }
 
@@ -28,12 +27,22 @@ class ResourceController extends Controller
 
         Resource::create([
             'title' => $request->title,
-            'link' =>$request->link,
+            'link' => $request->link,
             'description' =>$request->description,
-            'category_id' =>Category::first()->id,
+            'category_id' =>$request->category_id,
             'creator_id' =>$request->User()->id,
         ]);
 
         return Inertia::location('/');
+    }
+
+    public function search(Request $request){
+        return Resource::where('title', 'like', "%$request->search%")
+        // ->orWhere('description', 'like', "%$request->search%")
+        ->when(!empty($request->category_id), function ($query, $category_id){
+            return $query->where('category_id', $category_id);
+        })
+        ->with('category')
+        ->get();
     }
 }
