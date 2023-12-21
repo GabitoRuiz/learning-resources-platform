@@ -4,19 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Voter extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable =[
         'code',
     ];
 
     public function resources(){
-        return $this->BelongsToMany(Resources::class, 'votes');
+        return $this->belongsToMany(Resource::class, 'votes');
     }
-    
 }
-

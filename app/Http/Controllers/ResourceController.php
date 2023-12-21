@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resource;
+use App\Models\Category;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,18 +14,13 @@ class ResourceController extends Controller
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
-            'resources' => Resource::with('category')->latest()->get(),
+            'resources' => Resource::with('category','votes',)->latest()->get(),
+            'categories' => Category::all(),
         ]);
     }
 
     public function store(Request $request){
-        // $request->validate([
-        //  'title'=> ['required','max:255'],
-        //  'category_id' =>['required','exists:categories,id'],
-        //  'description' => ['required'],
-        //  'url' => ['required','url']
-        // ]);
-
+    
         Resource::create([
             'title' => $request->title,
             'link' => $request->link,
@@ -37,12 +33,14 @@ class ResourceController extends Controller
     }
 
     public function search(Request $request){
-        return Resource::where('title', 'like', "%$request->search%")
-        // ->orWhere('description', 'like', "%$request->search%")
-        ->when(!empty($request->category_id), function ($query, $category_id){
-            return $query->where('category_id', $category_id);
+        return Resource::query()
+        ->when(!empty($request->search), function ($query) use ($request){
+            return $query->where('title', 'like', "%$request->search%");
         })
-        ->with('category')
+        ->when(!empty($request->category), function ($query) use ($request){
+            return $query->where('category_id', $request->category);
+        })
+        ->with('category','votes')
         ->get();
     }
 }

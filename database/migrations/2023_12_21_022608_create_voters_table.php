@@ -16,14 +16,14 @@ return new class extends Migration
             $table->string('code');
             $table->timestamps();
         });
-
         Schema::create('votes', function (Blueprint $table) {
-            $table ->id();
-            $table ->foreignId('voter_id')->constrained();
-            $table ->foreignId('candidate_id')->constrained();
-            $table -> timestamps();
+            $table->id();
+            $table->foreignId('voter_id')->constrained();
+            $table->string('resource_id')->constrained();
+            $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.

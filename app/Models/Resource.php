@@ -16,6 +16,6 @@ class Resource extends Model
     }
 
     public function votes(){
-        return $this->belongsToMany(Voter::class);
+        return $this->belongsToMany(Voter::class, 'votes');
     }
 }
