@@ -62,9 +62,9 @@ function crearRecurso() {
 
 
       <div class="mb-2">
-        <label for="precio" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
-        <input type="number" id="precio" name="precio" class="w-full px-3 py-2 border rounded-md" placeholder="Ej. 29.99"
-          v-model="link">
+        <label for="url" class="block text-gray-700 text-sm font-bold mb-2">Url</label>
+        <input type="url" id="url" name="url" class="w-full px-3 py-2 border rounded-md" placeholder="www.google.com"
+        v-model="link">
       </div>
 
 

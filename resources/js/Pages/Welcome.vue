@@ -25,13 +25,13 @@ let search = ref('');
 let filteredResources = ref([]);
 
 watch(filteredCategories, (value => {
-    axios.get('/api/resources?category=' + value).then((response) => {
+    axios.get('/api/resources?category=' + value + "&category=" + filteredCategories.value).then((response) => {
         filteredCategories.value = response.data;
     });
 }));
 
 watch(search, (value => {
-    axios.get('/api/resources?search=' + value).then((response) => {
+    axios.get('/api/resources?search=' + value + "&search=" + search.value).then((response) => {
         filteredResources.value = response.data;
     });
 }));
@@ -43,7 +43,7 @@ onMounted(() => {
 function Votar(resourceId) {
     axios.get("/api/vote/" + resourceId).then((response) => {
         filteredResources.value = filteredResources.value.map((resource)=>{
-            if (resource.id === resourceId) {
+            if (resource.id == resourceId) {
                 return response.data;
             }
             return resource;
@@ -54,9 +54,10 @@ function Votar(resourceId) {
 </script>
 
 <template>
+    
     <Head title="Hi" />
 
-
+    
     <div
         class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
@@ -76,29 +77,38 @@ function Votar(resourceId) {
 
 
             </template>
+
         </div>
-        <div class="flex justify-center absolute top-10">
+
+        
+        <div class="flex justify-center absolute top-10 gap-20">
+            <h1 class="text-center text-xl">INTERACTIVE CARDS</h1>
             <input type="text" placeholder="Buscar...." v-model="search">
             <select class="w-full px-3 py-2 border rounded-md" v-model="filteredCategories">
                 <option v-for="category in categories" :key="category.id" :value="category.id">
                     {{ category.name }}
                 </option>
             </select>
-
         </div>
         <div class="container mx-auto mt-20 p-20 gap-8 grid grid-cols-4">
+            
             <div class="max-w-lg  rounded overflow-hidden shadow-lg bg-white" v-for="resource in filteredResources"
                 :key="resource.id">
                 <div class="px-6 py-4">
                     <div class="font-bold text-xl mb-2">{{ resource.title }}</div>
                     <p class="text-gray-700 text-base">
-                        {{ resource.link }}
+                        {{ resource.description }}
                     </p>
                 </div>
                 <div class="px-6 py-4">
                     <span
                         class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
                         {{ resource.category.name }}</span>
+                </div>
+                <div class="px-6 py-4">
+                    <span
+                        class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                        {{ resource.link }}</span>
                 </div>
                 <div class="px-6 py-4 flex">
                     <button @click="Votar(resource.id)"
