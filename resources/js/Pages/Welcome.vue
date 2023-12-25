@@ -43,7 +43,7 @@ onMounted(() => {
 function Votar(resourceId) {
     axios.get("/api/vote/" + resourceId).then((response) => {
         filteredResources.value = filteredResources.value.map((resource)=>{
-            if (resource.id == resourceId) {
+            if (resource.id === resourceId) {
                 return response.data;
             }
             return resource;
@@ -100,11 +100,11 @@ function Votar(resourceId) {
                         {{ resource.description }}
                     </p>
                 </div>
-                <div class="px-6 py-4">
+                <!-- <div class="px-6 py-4">
                     <span
                         class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
                         {{ resource.category.name }}</span>
-                </div>
+                </div> -->
                 <div class="px-6 py-4">
                     <span
                         class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">

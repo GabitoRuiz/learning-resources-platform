@@ -28,7 +28,7 @@ class VoteController extends Controller
        $resource->votes()->toggle($voter->id);
 
        //Devolverle el resource actulizado con el recuento de votos
-        return $resource->loadCount('votes', 'category');
+        return $resource->load('votes', 'category');
     }
 
 }
